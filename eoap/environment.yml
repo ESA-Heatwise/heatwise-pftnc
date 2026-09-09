@@ -7,4 +7,4 @@ dependencies:
 - pip
 - pystac
 - pip:
-    - dist/pftnc-0.0.9.dev0-py3-none-any.whl
+    - required_dist/pftnc-0.0.9.dev0-py3-none-any.whl
