@@ -55,10 +55,10 @@ $graph:
     id: xce_script
     requirements:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.09.06.28.43
+        dockerPull: pftnc_inference:2026.09.09.07.37.55
     hints:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.09.06.28.43
+        dockerPull: pftnc_inference:2026.09.09.07.37.55
     baseCommand:
       - /usr/local/bin/_entrypoint.sh
       - python
