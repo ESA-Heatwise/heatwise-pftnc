@@ -1,0 +1,560 @@
+# Created from the pftnc-experiments repository with pftnc-data checked out alongside it under the same workspace root.
+model_type: xgboost
+model_mode: multi_target
+dataset_version: elbe_bunthaus_20260811T124241Z_0bfc0832_74bb48
+model_io:
+  models:
+    __multi_target__:
+      input_columns:
+      - doy_sin
+      - chime_diatoms_ug_per_l_last_observed
+      - s3_chl_ug_per_l_days_since_obs
+      - doy_cos
+      - lstm_lswt_c
+      - s2_chl_ug_per_l
+      - s2_tur_mg_per_l
+      - s2_cdom_1_per_m
+      - s3_chl_ug_per_l
+      - s3_tur_mg_per_l
+      - s3_cdom_1_per_m
+      - chime_diatoms_ug_per_l_mean_3
+      - chime_diatoms_ug_per_l_median_3
+      - chime_diatoms_ug_per_l_max_3
+      - chime_diatoms_ug_per_l_slope_3
+      - chime_diatoms_ug_per_l_std_3
+      - chime_diatoms_ug_per_l_count_3
+      - chime_diatoms_ug_per_l_mean_5
+      - chime_diatoms_ug_per_l_median_5
+      - chime_diatoms_ug_per_l_max_5
+      - chime_diatoms_ug_per_l_slope_5
+      - chime_diatoms_ug_per_l_std_5
+      - chime_diatoms_ug_per_l_count_5
+      - chime_diatoms_ug_per_l_mean_10
+      - chime_diatoms_ug_per_l_median_10
+      - chime_diatoms_ug_per_l_max_10
+      - chime_diatoms_ug_per_l_slope_10
+      - chime_diatoms_ug_per_l_std_10
+      - chime_diatoms_ug_per_l_count_10
+      - chime_diatoms_ug_per_l_mean_15
+      - chime_diatoms_ug_per_l_median_15
+      - chime_diatoms_ug_per_l_max_15
+      - chime_diatoms_ug_per_l_slope_15
+      - chime_diatoms_ug_per_l_std_15
+      - chime_diatoms_ug_per_l_count_15
+      - chime_diatoms_ug_per_l_mean_30
+      - chime_diatoms_ug_per_l_median_30
+      - chime_diatoms_ug_per_l_max_30
+      - chime_diatoms_ug_per_l_slope_30
+      - chime_diatoms_ug_per_l_std_30
+      - chime_diatoms_ug_per_l_count_30
+      - chime_diatoms_ug_per_l_mean_60
+      - chime_diatoms_ug_per_l_median_60
+      - chime_diatoms_ug_per_l_max_60
+      - chime_diatoms_ug_per_l_slope_60
+      - chime_diatoms_ug_per_l_std_60
+      - chime_diatoms_ug_per_l_count_60
+      - chime_cyanobacteria_ug_per_l_mean_3
+      - chime_cyanobacteria_ug_per_l_median_3
+      - chime_cyanobacteria_ug_per_l_max_3
+      - chime_cyanobacteria_ug_per_l_slope_3
+      - chime_cyanobacteria_ug_per_l_std_3
+      - chime_cyanobacteria_ug_per_l_count_3
+      - chime_cyanobacteria_ug_per_l_mean_5
+      - chime_cyanobacteria_ug_per_l_median_5
+      - chime_cyanobacteria_ug_per_l_max_5
+      - chime_cyanobacteria_ug_per_l_slope_5
+      - chime_cyanobacteria_ug_per_l_std_5
+      - chime_cyanobacteria_ug_per_l_count_5
+      - chime_cyanobacteria_ug_per_l_mean_10
+      - chime_cyanobacteria_ug_per_l_median_10
+      - chime_cyanobacteria_ug_per_l_max_10
+      - chime_cyanobacteria_ug_per_l_slope_10
+      - chime_cyanobacteria_ug_per_l_std_10
+      - chime_cyanobacteria_ug_per_l_count_10
+      - chime_cyanobacteria_ug_per_l_mean_15
+      - chime_cyanobacteria_ug_per_l_median_15
+      - chime_cyanobacteria_ug_per_l_max_15
+      - chime_cyanobacteria_ug_per_l_slope_15
+      - chime_cyanobacteria_ug_per_l_std_15
+      - chime_cyanobacteria_ug_per_l_count_15
+      - chime_cyanobacteria_ug_per_l_mean_30
+      - chime_cyanobacteria_ug_per_l_median_30
+      - chime_cyanobacteria_ug_per_l_max_30
+      - chime_cyanobacteria_ug_per_l_slope_30
+      - chime_cyanobacteria_ug_per_l_std_30
+      - chime_cyanobacteria_ug_per_l_count_30
+      - chime_cyanobacteria_ug_per_l_mean_60
+      - chime_cyanobacteria_ug_per_l_median_60
+      - chime_cyanobacteria_ug_per_l_max_60
+      - chime_cyanobacteria_ug_per_l_slope_60
+      - chime_cyanobacteria_ug_per_l_std_60
+      - chime_cyanobacteria_ug_per_l_count_60
+      - chime_others_ug_per_l_mean_3
+      - chime_others_ug_per_l_median_3
+      - chime_others_ug_per_l_max_3
+      - chime_others_ug_per_l_slope_3
+      - chime_others_ug_per_l_std_3
+      - chime_others_ug_per_l_count_3
+      - chime_others_ug_per_l_mean_5
+      - chime_others_ug_per_l_median_5
+      - chime_others_ug_per_l_max_5
+      - chime_others_ug_per_l_slope_5
+      - chime_others_ug_per_l_std_5
+      - chime_others_ug_per_l_count_5
+      - chime_others_ug_per_l_mean_10
+      - chime_others_ug_per_l_median_10
+      - chime_others_ug_per_l_max_10
+      - chime_others_ug_per_l_slope_10
+      - chime_others_ug_per_l_std_10
+      - chime_others_ug_per_l_count_10
+      - chime_others_ug_per_l_mean_15
+      - chime_others_ug_per_l_median_15
+      - chime_others_ug_per_l_max_15
+      - chime_others_ug_per_l_slope_15
+      - chime_others_ug_per_l_std_15
+      - chime_others_ug_per_l_count_15
+      - chime_others_ug_per_l_mean_30
+      - chime_others_ug_per_l_median_30
+      - chime_others_ug_per_l_max_30
+      - chime_others_ug_per_l_slope_30
+      - chime_others_ug_per_l_std_30
+      - chime_others_ug_per_l_count_30
+      - chime_others_ug_per_l_mean_60
+      - chime_others_ug_per_l_median_60
+      - chime_others_ug_per_l_max_60
+      - chime_others_ug_per_l_slope_60
+      - chime_others_ug_per_l_std_60
+      - chime_others_ug_per_l_count_60
+      - lstm_lswt_c_mean_3
+      - lstm_lswt_c_median_3
+      - lstm_lswt_c_max_3
+      - lstm_lswt_c_slope_3
+      - lstm_lswt_c_std_3
+      - lstm_lswt_c_count_3
+      - lstm_lswt_c_mean_5
+      - lstm_lswt_c_median_5
+      - lstm_lswt_c_max_5
+      - lstm_lswt_c_slope_5
+      - lstm_lswt_c_std_5
+      - lstm_lswt_c_count_5
+      - lstm_lswt_c_mean_10
+      - lstm_lswt_c_median_10
+      - lstm_lswt_c_max_10
+      - lstm_lswt_c_slope_10
+      - lstm_lswt_c_std_10
+      - lstm_lswt_c_count_10
+      - lstm_lswt_c_mean_15
+      - lstm_lswt_c_median_15
+      - lstm_lswt_c_max_15
+      - lstm_lswt_c_slope_15
+      - lstm_lswt_c_std_15
+      - lstm_lswt_c_count_15
+      - lstm_lswt_c_mean_30
+      - lstm_lswt_c_median_30
+      - lstm_lswt_c_max_30
+      - lstm_lswt_c_slope_30
+      - lstm_lswt_c_std_30
+      - lstm_lswt_c_count_30
+      - lstm_lswt_c_mean_60
+      - lstm_lswt_c_median_60
+      - lstm_lswt_c_max_60
+      - lstm_lswt_c_slope_60
+      - lstm_lswt_c_std_60
+      - lstm_lswt_c_count_60
+      - s2_chl_ug_per_l_mean_3
+      - s2_chl_ug_per_l_median_3
+      - s2_chl_ug_per_l_max_3
+      - s2_chl_ug_per_l_slope_3
+      - s2_chl_ug_per_l_std_3
+      - s2_chl_ug_per_l_count_3
+      - s2_chl_ug_per_l_mean_5
+      - s2_chl_ug_per_l_median_5
+      - s2_chl_ug_per_l_max_5
+      - s2_chl_ug_per_l_slope_5
+      - s2_chl_ug_per_l_std_5
+      - s2_chl_ug_per_l_count_5
+      - s2_chl_ug_per_l_mean_10
+      - s2_chl_ug_per_l_median_10
+      - s2_chl_ug_per_l_max_10
+      - s2_chl_ug_per_l_slope_10
+      - s2_chl_ug_per_l_std_10
+      - s2_chl_ug_per_l_count_10
+      - s2_chl_ug_per_l_mean_15
+      - s2_chl_ug_per_l_median_15
+      - s2_chl_ug_per_l_max_15
+      - s2_chl_ug_per_l_slope_15
+      - s2_chl_ug_per_l_std_15
+      - s2_chl_ug_per_l_count_15
+      - s2_chl_ug_per_l_mean_30
+      - s2_chl_ug_per_l_median_30
+      - s2_chl_ug_per_l_max_30
+      - s2_chl_ug_per_l_slope_30
+      - s2_chl_ug_per_l_std_30
+      - s2_chl_ug_per_l_count_30
+      - s2_chl_ug_per_l_mean_60
+      - s2_chl_ug_per_l_median_60
+      - s2_chl_ug_per_l_max_60
+      - s2_chl_ug_per_l_slope_60
+      - s2_chl_ug_per_l_std_60
+      - s2_chl_ug_per_l_count_60
+      - s2_tur_mg_per_l_mean_3
+      - s2_tur_mg_per_l_median_3
+      - s2_tur_mg_per_l_max_3
+      - s2_tur_mg_per_l_slope_3
+      - s2_tur_mg_per_l_std_3
+      - s2_tur_mg_per_l_count_3
+      - s2_tur_mg_per_l_mean_5
+      - s2_tur_mg_per_l_median_5
+      - s2_tur_mg_per_l_max_5
+      - s2_tur_mg_per_l_slope_5
+      - s2_tur_mg_per_l_std_5
+      - s2_tur_mg_per_l_count_5
+      - s2_tur_mg_per_l_mean_10
+      - s2_tur_mg_per_l_median_10
+      - s2_tur_mg_per_l_max_10
+      - s2_tur_mg_per_l_slope_10
+      - s2_tur_mg_per_l_std_10
+      - s2_tur_mg_per_l_count_10
+      - s2_tur_mg_per_l_mean_15
+      - s2_tur_mg_per_l_median_15
+      - s2_tur_mg_per_l_max_15
+      - s2_tur_mg_per_l_slope_15
+      - s2_tur_mg_per_l_std_15
+      - s2_tur_mg_per_l_count_15
+      - s2_tur_mg_per_l_mean_30
+      - s2_tur_mg_per_l_median_30
+      - s2_tur_mg_per_l_max_30
+      - s2_tur_mg_per_l_slope_30
+      - s2_tur_mg_per_l_std_30
+      - s2_tur_mg_per_l_count_30
+      - s2_tur_mg_per_l_mean_60
+      - s2_tur_mg_per_l_median_60
+      - s2_tur_mg_per_l_max_60
+      - s2_tur_mg_per_l_slope_60
+      - s2_tur_mg_per_l_std_60
+      - s2_tur_mg_per_l_count_60
+      - s2_cdom_1_per_m_mean_3
+      - s2_cdom_1_per_m_median_3
+      - s2_cdom_1_per_m_max_3
+      - s2_cdom_1_per_m_slope_3
+      - s2_cdom_1_per_m_std_3
+      - s2_cdom_1_per_m_count_3
+      - s2_cdom_1_per_m_mean_5
+      - s2_cdom_1_per_m_median_5
+      - s2_cdom_1_per_m_max_5
+      - s2_cdom_1_per_m_slope_5
+      - s2_cdom_1_per_m_std_5
+      - s2_cdom_1_per_m_count_5
+      - s2_cdom_1_per_m_mean_10
+      - s2_cdom_1_per_m_median_10
+      - s2_cdom_1_per_m_max_10
+      - s2_cdom_1_per_m_slope_10
+      - s2_cdom_1_per_m_std_10
+      - s2_cdom_1_per_m_count_10
+      - s2_cdom_1_per_m_mean_15
+      - s2_cdom_1_per_m_median_15
+      - s2_cdom_1_per_m_max_15
+      - s2_cdom_1_per_m_slope_15
+      - s2_cdom_1_per_m_std_15
+      - s2_cdom_1_per_m_count_15
+      - s2_cdom_1_per_m_mean_30
+      - s2_cdom_1_per_m_median_30
+      - s2_cdom_1_per_m_max_30
+      - s2_cdom_1_per_m_slope_30
+      - s2_cdom_1_per_m_std_30
+      - s2_cdom_1_per_m_count_30
+      - s2_cdom_1_per_m_mean_60
+      - s2_cdom_1_per_m_median_60
+      - s2_cdom_1_per_m_max_60
+      - s2_cdom_1_per_m_slope_60
+      - s2_cdom_1_per_m_std_60
+      - s2_cdom_1_per_m_count_60
+      - s3_chl_ug_per_l_mean_3
+      - s3_chl_ug_per_l_median_3
+      - s3_chl_ug_per_l_max_3
+      - s3_chl_ug_per_l_slope_3
+      - s3_chl_ug_per_l_std_3
+      - s3_chl_ug_per_l_count_3
+      - s3_chl_ug_per_l_mean_5
+      - s3_chl_ug_per_l_median_5
+      - s3_chl_ug_per_l_max_5
+      - s3_chl_ug_per_l_slope_5
+      - s3_chl_ug_per_l_std_5
+      - s3_chl_ug_per_l_count_5
+      - s3_chl_ug_per_l_mean_10
+      - s3_chl_ug_per_l_median_10
+      - s3_chl_ug_per_l_max_10
+      - s3_chl_ug_per_l_slope_10
+      - s3_chl_ug_per_l_std_10
+      - s3_chl_ug_per_l_count_10
+      - s3_chl_ug_per_l_mean_15
+      - s3_chl_ug_per_l_median_15
+      - s3_chl_ug_per_l_max_15
+      - s3_chl_ug_per_l_slope_15
+      - s3_chl_ug_per_l_std_15
+      - s3_chl_ug_per_l_count_15
+      - s3_chl_ug_per_l_mean_30
+      - s3_chl_ug_per_l_median_30
+      - s3_chl_ug_per_l_max_30
+      - s3_chl_ug_per_l_slope_30
+      - s3_chl_ug_per_l_std_30
+      - s3_chl_ug_per_l_count_30
+      - s3_chl_ug_per_l_mean_60
+      - s3_chl_ug_per_l_median_60
+      - s3_chl_ug_per_l_max_60
+      - s3_chl_ug_per_l_slope_60
+      - s3_chl_ug_per_l_std_60
+      - s3_chl_ug_per_l_count_60
+      - s3_tur_mg_per_l_mean_3
+      - s3_tur_mg_per_l_median_3
+      - s3_tur_mg_per_l_max_3
+      - s3_tur_mg_per_l_slope_3
+      - s3_tur_mg_per_l_std_3
+      - s3_tur_mg_per_l_count_3
+      - s3_tur_mg_per_l_mean_5
+      - s3_tur_mg_per_l_median_5
+      - s3_tur_mg_per_l_max_5
+      - s3_tur_mg_per_l_slope_5
+      - s3_tur_mg_per_l_std_5
+      - s3_tur_mg_per_l_count_5
+      - s3_tur_mg_per_l_mean_10
+      - s3_tur_mg_per_l_median_10
+      - s3_tur_mg_per_l_max_10
+      - s3_tur_mg_per_l_slope_10
+      - s3_tur_mg_per_l_std_10
+      - s3_tur_mg_per_l_count_10
+      - s3_tur_mg_per_l_mean_15
+      - s3_tur_mg_per_l_median_15
+      - s3_tur_mg_per_l_max_15
+      - s3_tur_mg_per_l_slope_15
+      - s3_tur_mg_per_l_std_15
+      - s3_tur_mg_per_l_count_15
+      - s3_tur_mg_per_l_mean_30
+      - s3_tur_mg_per_l_median_30
+      - s3_tur_mg_per_l_max_30
+      - s3_tur_mg_per_l_slope_30
+      - s3_tur_mg_per_l_std_30
+      - s3_tur_mg_per_l_count_30
+      - s3_tur_mg_per_l_mean_60
+      - s3_tur_mg_per_l_median_60
+      - s3_tur_mg_per_l_max_60
+      - s3_tur_mg_per_l_slope_60
+      - s3_tur_mg_per_l_std_60
+      - s3_tur_mg_per_l_count_60
+      - s3_cdom_1_per_m_mean_3
+      - s3_cdom_1_per_m_median_3
+      - s3_cdom_1_per_m_max_3
+      - s3_cdom_1_per_m_slope_3
+      - s3_cdom_1_per_m_std_3
+      - s3_cdom_1_per_m_count_3
+      - s3_cdom_1_per_m_mean_5
+      - s3_cdom_1_per_m_median_5
+      - s3_cdom_1_per_m_max_5
+      - s3_cdom_1_per_m_slope_5
+      - s3_cdom_1_per_m_std_5
+      - s3_cdom_1_per_m_count_5
+      - s3_cdom_1_per_m_mean_10
+      - s3_cdom_1_per_m_median_10
+      - s3_cdom_1_per_m_max_10
+      - s3_cdom_1_per_m_slope_10
+      - s3_cdom_1_per_m_std_10
+      - s3_cdom_1_per_m_count_10
+      - s3_cdom_1_per_m_mean_15
+      - s3_cdom_1_per_m_median_15
+      - s3_cdom_1_per_m_max_15
+      - s3_cdom_1_per_m_slope_15
+      - s3_cdom_1_per_m_std_15
+      - s3_cdom_1_per_m_count_15
+      - s3_cdom_1_per_m_mean_30
+      - s3_cdom_1_per_m_median_30
+      - s3_cdom_1_per_m_max_30
+      - s3_cdom_1_per_m_slope_30
+      - s3_cdom_1_per_m_std_30
+      - s3_cdom_1_per_m_count_30
+      - s3_cdom_1_per_m_mean_60
+      - s3_cdom_1_per_m_median_60
+      - s3_cdom_1_per_m_max_60
+      - s3_cdom_1_per_m_slope_60
+      - s3_cdom_1_per_m_std_60
+      - s3_cdom_1_per_m_count_60
+      output_columns:
+      - diatoms_ug_per_l
+      - cyanobacterial_ug_per_l
+      - others_ug_per_l
+  physical_target_columns:
+  - diatoms_ug_per_l
+  - cyanobacterial_ug_per_l
+  - others_ug_per_l
+dataset_metadata:
+  sites:
+  - elbe_bunthaus
+  dataset_schema:
+    date_column: time
+    group_column: site
+    sensors:
+      chime:
+      - chime_diatoms_ug_per_l
+      - chime_cyanobacteria_ug_per_l
+      - chime_others_ug_per_l
+      lstm:
+      - lstm_lswt_c
+      s2:
+      - s2_chl_ug_per_l
+      - s2_tur_mg_per_l
+      - s2_cdom_1_per_m
+      s3:
+      - s3_chl_ug_per_l
+      - s3_tur_mg_per_l
+      - s3_cdom_1_per_m
+    targets:
+    - diatoms_ug_per_l
+    - cyanobacterial_ug_per_l
+    - others_ug_per_l
+  splits:
+    final_test_year: 2023
+feature_engineering:
+  rolling:
+    windows:
+    - 3
+    - 5
+    - 10
+    - 15
+    - 30
+    - 60
+    statistics:
+    - mean
+    - median
+    - max
+    - slope
+    - std
+    - count
+feature_selection:
+  include:
+  - doy_sin
+  - chime_diatoms_ug_per_l_last_observed
+  - s3_chl_ug_per_l_days_since_obs
+  - s2_chl_ug_per_l_days_since_obs
+  - doy_cos
+  exclude:
+  - s2_chl_ug_per_l_days_since_obs
+target_transformations:
+  per_target: {}
+  log_fractions: null
+selection:
+  metric: rmse
+  direction: minimize
+  mode: mean
+  target: null
+  fold_scores:
+    fold_2015: 11.568275857461835
+    fold_2016: 5.486710850086724
+    fold_2017: 9.89717598973967
+    fold_2018: 9.93921835855714
+    fold_2019: 2.640613405038669
+    fold_2021: 9.729751256670975
+    fold_2022: 7.91522130313736
+    fold_2024: 15.100761069193375
+  target_scores:
+    diatoms_ug_per_l:
+      fold_2015: 19.97865789211108
+      fold_2016: 8.65494044790861
+      fold_2017: 17.762144456051917
+      fold_2018: 15.264076807826882
+      fold_2019: 4.214335888588273
+      fold_2021: 14.24476841926448
+      fold_2022: 13.057046737396997
+      fold_2024: 21.26913735641712
+    cyanobacterial_ug_per_l:
+      fold_2015: 1.2721256443185742
+      fold_2016: 2.5819946549383443
+      fold_2017: 2.428346673938794
+      fold_2018: 2.7821252946182855
+      fold_2019: 0.8522572152757623
+      fold_2021: 5.102800122911623
+      fold_2022: 3.466015174112582
+      fold_2024: 7.477837375588076
+    others_ug_per_l:
+      fold_2015: 13.454044035955851
+      fold_2016: 5.223197447413221
+      fold_2017: 9.501036839228298
+      fold_2018: 11.771452973226248
+      fold_2019: 2.8552471112519715
+      fold_2021: 9.841685227836821
+      fold_2022: 7.222601997902502
+      fold_2024: 16.55530847557493
+  best_overall:
+    fold: fold_2019
+    score: 2.640613405038669
+  best_per_target:
+    diatoms_ug_per_l:
+      fold: fold_2019
+      score: 4.214335888588273
+    cyanobacterial_ug_per_l:
+      fold: fold_2019
+      score: 0.8522572152757623
+    others_ug_per_l:
+      fold: fold_2019
+      score: 2.8552471112519715
+  ensemble_weights:
+    global:
+      fold_2015: 0.08644330514948555
+      fold_2016: 0.18225855659665277
+      fold_2017: 0.10103892272267287
+      fold_2018: 0.1006115334149041
+      fold_2019: 0.3786998877199732
+      fold_2021: 0.10277755038335369
+      fold_2022: 0.12633885544092488
+      fold_2024: 0.06622182785476098
+    per_target:
+      diatoms_ug_per_l:
+        fold_2015: 0.05005341226623973
+        fold_2016: 0.11554094519987612
+        fold_2017: 0.05629950834339038
+        fold_2018: 0.06551329717413602
+        fold_2019: 0.23728531052966972
+        fold_2021: 0.070201211460034
+        fold_2022: 0.0765869970531603
+        fold_2024: 0.04701648135711953
+      cyanobacterial_ug_per_l:
+        fold_2015: 0.7860858748238341
+        fold_2016: 0.3872974710026575
+        fold_2017: 0.4118028165961961
+        fold_2018: 0.3594374422799684
+        fold_2019: 1.1733546892606044
+        fold_2021: 0.19597083481870867
+        fold_2022: 0.2885157593852814
+        fold_2024: 0.13372850327884503
+      others_ug_per_l:
+        fold_2015: 0.0743270943165866
+        fold_2016: 0.1914536086502432
+        fold_2017: 0.10525167062516336
+        fold_2018: 0.08495128020937301
+        fold_2019: 0.35023238306036464
+        fold_2021: 0.10160861446488241
+        fold_2022: 0.13845425793784671
+        fold_2024: 0.06040358604464314
+folds:
+  fold_2015:
+    models:
+      __multi_target__: models/fold_2015/model.json
+  fold_2016:
+    models:
+      __multi_target__: models/fold_2016/model.json
+  fold_2017:
+    models:
+      __multi_target__: models/fold_2017/model.json
+  fold_2018:
+    models:
+      __multi_target__: models/fold_2018/model.json
+  fold_2019:
+    models:
+      __multi_target__: models/fold_2019/model.json
+  fold_2021:
+    models:
+      __multi_target__: models/fold_2021/model.json
+  fold_2022:
+    models:
+      __multi_target__: models/fold_2022/model.json
+  fold_2024:
+    models:
+      __multi_target__: models/fold_2024/model.json
