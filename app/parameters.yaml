@@ -1,0 +1,21 @@
+bundle_path:
+  default: hw-berlin_muggelsee_mlrun_20260916_113308
+  type: Directory
+input_dataset_path:
+  default: ''
+  type: Directory
+mode:
+  default: from_date
+  type: str
+save_index:
+  default: true
+  type: bool
+save_outputs:
+  default: false
+  type: bool
+selection:
+  default: ensemble_simple
+  type: str
+start_date:
+  default: '2023-12-01'
+  type: str

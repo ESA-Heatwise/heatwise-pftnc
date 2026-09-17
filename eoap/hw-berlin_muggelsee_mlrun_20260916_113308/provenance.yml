@@ -1,0 +1,31 @@
+schema_version: 1
+created_from: pftnc-experiments
+source_experiment: berlin_muggelsee_mlrun_20260916_113308
+dataset_version: berlin_muggelsee_20260909T233513Z_fd9e31b6_7df4bb
+dataset_lineage:
+  stage: feature_engineered
+  repository: pftnc-data
+  base_path: data/feature_engineered/berlin_muggelsee
+  registry_path: data/feature_engineered/berlin_muggelsee/feature_engineered.yaml
+  version: berlin_muggelsee_20260909T233513Z_fd9e31b6_7df4bb
+  inputs:
+  - stage: simulation
+    repository: pftnc-data
+    base_path: data/simulated/berlin_muggelsee
+    registry_path: data/simulated/berlin_muggelsee/simulated.yaml
+    version: berlin_muggelsee_20260818T113621Z_ae81ef20_9a61e5
+    inputs:
+    - stage: raw_input
+      repository: heatwise-rnd
+      path: data/berlin/7.0_pftnc/berlin_muggelsee_IOP_daily_v0.3_sanitized.csv
+      sha256: bc7567190eea7d295841a1c3e1f95e0ac8fee8825ca25ef2a6b21d311d23e3fb
+dataset_provenance_available: true
+mlflow_model_uris:
+  fold_2015: models:/m-419511f1b3a34f01a7964a13d5e3f758
+  fold_2016: models:/m-c2a2aeba62964e7680e9c802c3cf2aac
+  fold_2017: models:/m-b4f289fab15a456eb50bb6270bffaa0f
+  fold_2018: models:/m-31b8fa6c05bf4bf3ab7768fdf8bde8ee
+  fold_2019: models:/m-2f25b79b0c4b44a9a3cdedd76319237c
+  fold_2020: models:/m-9d749d36af8e47fcb6d96c87bd8c5c42
+  fold_2021: models:/m-1344a6f1af184f87be66fe33073aab94
+  fold_2022: models:/m-fed828621e664411b5870064921205f9
