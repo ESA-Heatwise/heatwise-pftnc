@@ -1,0 +1,18 @@
+{
+  "type": "Catalog",
+  "id": "pftnc_berlin_muggelsee_catalog",
+  "stac_version": "1.1.0",
+  "description": "pftnc_berlin_muggelsee_catalog",
+  "links": [
+    {
+      "rel": "root",
+      "href": "./catalog.json",
+      "type": "application/json"
+    },
+    {
+      "rel": "item",
+      "href": "./pftnc_berlin_muggelsee_item.json",
+      "type": "application/geo+json"
+    }
+  ]
+}
