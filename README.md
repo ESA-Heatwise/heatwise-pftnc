@@ -95,7 +95,11 @@ containing changes you need.
 Run this from the root of this repository:
 
 ```bash
-cwltool --outdir testcwl/ eoap/pftnc.cwl#pftnc_inference --input_dataset_path input/elbe_bunthaus
+cwltool --outdir testcwl/ \
+  eoap/pftnc.cwl#pftnc_inference \
+  --input_dataset_path input/<your-site> \
+   --bundle_path eoap/hw-berlin_muggelsee_mlrun_20260916_113308 \
+   --<other options>
 ```
 
 `--outdir` is optional. It controls where the generated STAC catalog and 

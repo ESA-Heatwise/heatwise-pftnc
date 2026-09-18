@@ -88,7 +88,9 @@ From the repository root, run it with the input directory:
 ```bash
 cwltool --outdir testcwl/ \
   eoap/pftnc.cwl#pftnc_inference \
-  --input_dataset_path input/<your-site>
+  --input_dataset_path input/<your-site> \
+   --bundle_path eoap/<your-model> \
+   --<other options>
 ```
 
 The workflow reads the catalog and STAC item from the supplied input
