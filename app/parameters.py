@@ -1,0 +1,296 @@
+import builtins
+import contextlib
+import logging
+import os
+import pathlib
+import typing
+from typing import Any, ClassVar, cast
+
+import xarray as xr
+import yaml
+
+LOGGER = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+
+class NotebookParameters:
+
+    params: dict[str, tuple[type | str, Any]]
+    cwl_params: dict[str, tuple[type | str, Any]]
+    dataset_inputs: list[str]
+    config_var_name: ClassVar[str] = "xcengine_config"
+    config: dict[str, Any]
+
+    def __init__(
+        self,
+        params: dict[str, tuple[type | str, Any]],
+        config: dict[str, Any] | None = None,
+    ):
+        self.params = params
+        self.config = {} if config is None else config
+        self.make_cwl_params()
+
+    def make_cwl_params(self) -> None:
+        self.dataset_inputs = []
+        self.cwl_params = {}
+        for param_name in self.params:
+            type_, default = self.params[param_name]
+            if type_ is xr.Dataset:
+                self.dataset_inputs.append(param_name)
+            else:
+                self.cwl_params[param_name] = self.cwl_type(type_), default
+        if self.dataset_inputs:
+            self.cwl_params["product"] = "Directory", None
+
+    @classmethod
+    def from_code(
+        cls, code: str, setup_code: str | None = None, cwd: pathlib.Path | None = None
+    ) -> "NotebookParameters":
+        variables = cls.extract_variables(code, setup_code, cwd)
+        config = variables.pop(cls.config_var_name, (None, None))
+        if config[1] is not None:
+            if type(config[1]) is not dict:
+                raise TypeError("Configuration variable must be a dict")
+            if not all(type(k) is str for k in cast(dict, config[1]).keys()):
+                raise TypeError("Configuration dict keys must be strings")
+        return cls(variables, cast(dict[str, Any], config[1]))
+
+    @classmethod
+    def from_yaml(cls, yaml_content: str | typing.IO) -> "NotebookParameters":
+        input_data = yaml.safe_load(yaml_content)
+        def convert_type(yaml_spec: str) -> type | str:
+            match yaml_spec:
+                case "int" | "float" | "bool" | "str" | "Dataset":
+                    return eval(yaml_spec, globals(), {"Dataset": xr.Dataset})
+                case "Directory":
+                    return "Directory"
+            raise ValueError(f'Unknown type in YAML: "{yaml_spec}"')
+        return cls(
+            {
+                k: (
+                    convert_type(v["type"]),
+                    v["default"],
+                )
+                for k, v in input_data.items()
+            }
+        )
+
+    @classmethod
+    def from_yaml_file(cls, path: str | os.PathLike) -> "NotebookParameters":
+        with open(path, "r") as fh:
+            return cls.from_yaml(fh)
+
+    @classmethod
+    def extract_variables(
+        cls, code: str, setup_code: str | None = None, cwd: pathlib.Path | None = None
+    ) -> dict[str, tuple[type | str, Any]]:
+        if cwd is None:
+            return cls._extract_variables(code, setup_code)
+        else:
+            LOGGER.info(f"Using CWD {cwd} for parameter extraction")
+            path_setup = (f"import sys\n"
+                          f"sys.path.insert(0, '{cwd.resolve()}')\n\n")
+            with contextlib.chdir(cwd):
+                return cls._extract_variables(code, path_setup + setup_code)
+
+    @classmethod
+    def _extract_variables(
+        cls, code: str, setup_code: str | None = None
+    ) -> dict[str, tuple[type | str, Any]]:
+        import os
+        LOGGER.info(f"CWD: {os.getcwd()}")
+        LOGGER.info(f"Setup: {setup_code}")
+        if setup_code is None:
+            locals_: dict[str, object] = {}
+            old_locals = {}
+        else:
+            exec(setup_code, globals(), locals_ := {})
+            old_locals = locals_.copy()
+        exec(code, globals(), locals_)
+        annotations = cls.read_annotations(code)
+        new_vars = locals_.keys() - old_locals.keys()
+        new_var_dict = {
+            k: cls.make_param_tuple(k, locals_[k]) for k in new_vars if not k.startswith("__")
+        }
+        for k in new_var_dict:
+            if k in annotations and annotations[k] == "'EOInput'":
+                old_var = new_var_dict[k]
+                new_var_dict[k] = ("Directory", old_var[1])
+        return dict(sorted(new_var_dict.items()))
+
+    @classmethod
+    def make_param_tuple(cls, key: str, value: Any) -> tuple[type | str, Any]:
+        return (
+            t := type(value),
+            (
+                value
+                if t in {int, float, str, bool} or key == cls.config_var_name
+                else None
+            ),
+        )
+
+    def get_cwl_workflow_inputs(self) -> dict[str, dict[str, Any]]:
+        return {
+            var_name: self.get_cwl_workflow_input(var_name)
+            for var_name in self.params
+        }
+
+    def get_cwl_step_inputs(self) -> dict[str, str]:
+        return {var_name: var_name for var_name in self.params}
+
+    def get_cwl_commandline_inputs(self) -> dict[str, dict[str, Any]]:
+        return {
+            var_name: self.get_cwl_commandline_input(var_name)
+            for var_name in self.params
+        }
+
+    def get_cwl_workflow_input(self, var_name: str) -> dict[str, Any]:
+        type_, default_ = self.params[var_name]
+        return {
+            "label": var_name,
+            "doc": var_name,
+            "type": self.cwl_type(type_),
+            "default": {"class": "Directory", "location": default_}
+                if type_ == "Directory" else default_,
+        }
+
+    def get_cwl_commandline_input(self, var_name: str) -> dict[str, Any]:
+        return self.get_cwl_workflow_input(var_name) | {
+            "inputBinding": {"prefix": f'--{var_name.replace("_", "-")}'}
+        }
+
+    def to_yaml(self) -> str:
+        def dump_type(type_: type | str) -> str:
+            match type_:
+                case type():
+                    return type_.__name__
+                case str():
+                    return type_
+                case _:
+                    raise TypeError(f"Unhandled type {type_} for YAML export")
+        return yaml.safe_dump(
+            {
+                name: {"type": dump_type(type_), "default": default_}
+                for name, (type_, default_) in self.params.items()
+            }
+        )
+
+    def read_params_combined(
+        self, cli_args: list[str] | None
+    ) -> dict[str, Any]:
+        params = self.read_params_from_env()
+        if cli_args:
+            params.update(self.read_params_from_cli(cli_args))
+        return params
+
+    def read_params_from_env(self) -> dict[str, Any]:
+        values = {}
+        for param_name, (type_, _) in self.params.items():
+            env_var_name = "xce_" + param_name
+            if env_var_name in os.environ:
+                val = os.environ[env_var_name]
+                values[param_name] = (
+                    val.lower() not in {"false", "0", ""}
+                    if type_ is bool
+                    else type_(val)
+                )
+        return values
+
+    def read_params_from_cli(self, args: list[str]) -> dict[str, Any]:
+        values = {}
+        for param_name, (type_, _) in self.params.items():
+            arg_name = "--" + param_name.replace("_", "-")
+            if arg_name in args and type_ != xr.Dataset:
+                match type_:
+                    case builtins.bool:
+                        values[param_name] = True
+                    case "Directory":
+                        values[param_name] = args[args.index(arg_name) + 1]
+                    case _:
+                        values[param_name] = type_(
+                            args[args.index(arg_name) + 1]
+                        )
+        if "product" in self.cwl_params and "--product" in args:
+            self.read_datasets_from_product(
+                args[args.index("--product") + 1], values
+            )
+        return values
+
+    def read_datasets_from_product(
+        self, stage_in: pathlib.Path | str, values: dict[str, Any]
+    ) -> None:
+        stage_in_path = pathlib.Path(stage_in)
+        catalog_path = stage_in_path / "catalog.json"
+        if not catalog_path.is_file():
+            raise RuntimeError(
+                f"Stage-in directory {stage_in_path} does not contain a "
+                f'"catalog.json" file.'
+            )
+        import pystac
+        catalog = pystac.Catalog.from_file(catalog_path)
+        item_links = [link for link in catalog.links if link.rel == "item"]
+        expected_names = set(self.dataset_inputs)
+        provided_names = {
+            pystac.Item.from_file(stage_in_path / link.href).id
+            for link in item_links
+        }
+        if (extra := provided_names - expected_names) != set():
+            LOGGER.warning(
+                f"Unexpected item(s) in stage-in catalogue: {', '.join(extra)}"
+            )
+        if (missing := expected_names - provided_names) != set():
+            raise RuntimeError(
+                f"Expected item(s) missing in stage-in catalogue: "
+                f"{', '.join(missing)}"
+            )
+        for param_name, (type_, _) in self.params.items():
+            if type_ is xr.Dataset:
+                values[param_name] = self.read_staged_in_dataset(
+                    stage_in_path, catalog, param_name
+                )
+
+    @staticmethod
+    def read_staged_in_dataset(
+        stage_in_path: pathlib.Path,
+        catalog: "pystac.Catalog",
+        param_name: str,
+    ) -> xr.Dataset:
+        import pystac
+        item_links = [link for link in catalog.links if link.rel == "item"]
+        item = next(
+            filter(
+                lambda i: i.id == param_name,
+                (
+                    pystac.Item.from_file(stage_in_path / link.href)
+                    for link in item_links
+                ),
+            )
+        )
+        asset = next(
+            a for a in item.assets.values() if "data" in (a.roles or [])
+        )
+        return xr.open_dataset(stage_in_path / asset.href)
+
+    @staticmethod
+    def cwl_type(type_: type | str) -> str:
+        try:
+            # noinspection PyTypeChecker
+            return {
+                int: "long",
+                float: "double",
+                str: "string",
+                bool: "boolean",
+                "Directory": "Directory",
+            }[type_]
+        except KeyError:
+            raise ValueError(f"Unhandled type {type_}")
+
+    @staticmethod
+    def read_annotations(code: str) -> dict[str, str]:
+        import ast
+
+        return {
+            ast.unparse(node.target): ast.unparse(node.annotation)
+            for node in ast.walk(ast.parse(code))
+            if isinstance(node, ast.AnnAssign)
+        }

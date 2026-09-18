@@ -1,0 +1,201 @@
+# Copyright (c) 2024-2026 by Brockmann Consult GmbH
+# Permissions are hereby granted under the terms of the MIT License:
+# https://opensource.org/licenses/MIT.
+import argparse
+import logging
+from datetime import datetime
+import json
+import pathlib
+import shutil
+from typing import NamedTuple, Mapping
+
+import pandas as pd
+import xarray as xr
+from xarray import Dataset
+
+_MEDIA_TYPES: Mapping[str, str] = {
+    "netcdf": "application/x-netcdf",
+    "zarr": "application/vnd.zarr",
+    "csv": "text/csv",
+}
+
+def clear_directory(directory: pathlib.Path) -> None:
+    for path in directory.iterdir():
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+
+
+def write_stac(
+    datasets: Mapping[str, xr.Dataset], stac_root: pathlib.Path
+) -> None:
+    try:
+        import pystac
+    except ModuleNotFoundError:
+        # If pystac isn't present, we assume that stage-out is not required
+        # and exit quietly.
+        return
+    catalog_path = stac_root / "catalog.json"
+    if catalog_path.exists():
+        # Assume that the user code generated its own stage-out data
+        return
+    catalog = pystac.Catalog(
+        id="catalog",
+        description="Root catalog",
+        href=f"{catalog_path}",
+    )
+    for ds_name, ds in datasets.items():
+        if isinstance(ds, xr.Dataset):
+            output_format = ds.attrs.get("xcengine_output_format", "zarr")
+            suffix = "nc" if output_format == "netcdf" else "zarr"
+        elif isinstance(ds, pd.DataFrame):
+            output_format = "csv"
+            suffix = "csv"
+        else:
+            raise TypeError(
+                "{ds_id} cannot be catalogued because type {type(ds)}"
+                            "is not supported."
+            )
+        output_name = f"{ds_name}.{suffix}"
+        output_path = stac_root / "output" / output_name
+        asset_parent = stac_root / ds_name
+        asset_parent.mkdir(parents=True, exist_ok=True)
+        asset_path = asset_parent / output_name
+        if output_path.exists():
+            # If a file/dir for this asset is present in the output directory,
+            # move it into the corresponding STAC subdirectory. If not,
+            # we write the same STAC items with the same asset links anyway
+            # and assume that the caller will take care of actually writing
+            # the asset.
+            output_path.rename(asset_path)
+        asset = pystac.Asset(
+            roles=["data", "visual"],
+            href=str(asset_path),
+            # No official media type for Zarr yet, but "application/vnd.zarr"
+            # https://github.com/radiantearth/stac-spec/issues/713 and listed in
+            # https://humanbrainproject.github.io/openMINDS/v3/core/v4/data/contentType.html
+            # https://planetarycomputer.microsoft.com/api/stac/v1/collections/terraclimate
+            # uses the similar "application/vnd+zarr" but RFC 6838 mandates
+            # "." rather than "+".
+            media_type=_MEDIA_TYPES[output_format],
+            title=ds.attrs.get("title", ds_name),
+        )
+
+        class Bounds(NamedTuple):
+            left: float
+            bottom: float
+            right: float
+            top: float
+
+        # TODO determine and set actual bounds here
+        bb = Bounds(0, -90, 360, 90)
+        item = pystac.Item(
+            id=ds_name,
+            geometry={
+                "type": "Polygon",
+                "coordinates": [
+                    [bb.left, bb.bottom],
+                    [bb.left, bb.top],
+                    [bb.right, bb.top],
+                    [bb.right, bb.bottom],
+                    [bb.left, bb.bottom],
+                ],
+            },
+            bbox=[bb.left, bb.bottom, bb.right, bb.top],
+            datetime=None,
+            start_datetime=datetime(2000, 1, 1),  # TODO set actual start
+            end_datetime=datetime(2001, 1, 1),  # TODO set actual end
+            properties={},  # datetime values will be filled in automatically
+            assets={"zarr": asset},
+        )
+        catalog.add_item(item)
+    catalog.make_all_asset_hrefs_relative()
+    catalog.save(catalog_type=pystac.CatalogType.SELF_CONTAINED)
+
+
+def save_datasets(
+    datasets: Mapping[str, Dataset], output_path: pathlib.Path, eoap_mode: bool
+) -> dict[str, pathlib.Path]:
+    saved_datasets = {}
+    # EOAP doesn't require an "output" subdirectory (output can go anywhere
+    # in the CWD) but it's used by xcetool's built-in runner.
+    # Note that EOAP runners typically override the image-specified CWD.
+    for ds_id, ds in datasets.items():
+        output_subpath = output_path / (ds_id if eoap_mode else "output")
+        output_subpath.mkdir(parents=True, exist_ok=True)
+        if isinstance(ds, xr.Dataset):
+            output_format = ds.attrs.get("xcengine_output_format", "zarr")
+            suffix = "nc" if output_format == "netcdf" else "zarr"
+            dataset_path = output_subpath / f"{ds_id}.{suffix}"
+            saved_datasets[ds_id] = dataset_path
+
+            if output_format == "netcdf":
+                ds.to_netcdf(dataset_path)
+            else:
+                ds.to_zarr(dataset_path)
+        elif isinstance(ds, pd.DataFrame):
+            ds.to_csv(output_subpath / f"{ds_id}.csv")
+        else:
+            raise TypeError("{ds_id} cannot be saved because type {type(ds)}"
+                            "is not supported.")
+
+    # The "datasets_saved" file is a flag to indicate to a runner when
+    # processing is complete, though the xcetool runner doesn't yet use it.
+    (output_path / "datasets_saved").touch()
+    if eoap_mode:
+        write_stac(datasets, output_path)
+    return saved_datasets
+
+
+def start_server(
+        datasets: Mapping[str, xr.Dataset],
+        saved_datasets: dict[str, pathlib.Path],
+        args: argparse.Namespace,
+        logger: logging.Logger
+):
+    try:
+        import xcube.util.plugin
+        import xcube.webapi.viewer
+        from xcube.server.server import Server
+        from xcube.server.framework import get_framework_class
+    except ImportError as e:
+        logger.info(e.msg)
+        logger.info("Not starting server, since xcube not available")
+        return
+
+    xcube.util.plugin.init_plugins()
+    server = Server(framework=get_framework_class("tornado")(), config={})
+    dataset_context = server.ctx.get_api_ctx("datasets")
+    for name in datasets:
+        dataset = (
+            xr.open_zarr(saved_datasets[name])
+            if args.batch and args.from_saved
+            else datasets[name]
+        )
+        dataset_context.add_dataset(dataset, name, style="bar")
+        logger.info("Added " + name)
+    logo_data = (
+        pathlib.Path(xcube.webapi.viewer.__file__).parent
+        / "dist"
+        / "images"
+        / "logo.png"
+    ).read_bytes()
+
+    viewer_context = server.ctx.get_api_ctx("viewer")
+    viewer_context.config_items = {
+        "config.json": json.dumps(
+            {
+                "server": {"url": args.xcube_viewer_api_url},
+                "branding": {
+                    # "layerVisibilities": {
+                    #     # Set the default basemap.
+                    #     "baseMaps.CartoDB.Dark Matter": True
+                    # }
+                },
+            }
+        ),
+        "images/logo.png": logo_data,
+    }
+    logger.info(f"Starting server on port {server.ctx.config['port']}...")
+    server.start()
