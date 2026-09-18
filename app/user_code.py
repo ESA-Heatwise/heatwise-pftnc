@@ -22,7 +22,8 @@ save_outputs: bool = False
 save_index: bool = True
 
 xcengine_config = dict(
-  # ...
+    environment_file="environment.yml",
+    container_image_tag="ghcr.io/esa-heatwise/heatwise-pftnc-inference:latest",
     include_directory=True,
     build_includes=["../../pftnc"]  # paths relative to notebook
 )
