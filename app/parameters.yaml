@@ -1,3 +1,6 @@
+bundle_path:
+  default: null
+  type: Directory
 input_dataset_path:
   default: null
   type: Directory

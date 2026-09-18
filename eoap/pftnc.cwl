@@ -12,6 +12,13 @@ $graph:
     doc: xcengine notebook
     requirements: []
     inputs:
+      bundle_path:
+        label: bundle_path
+        doc: bundle_path
+        type: Directory
+        default:
+          class: Directory
+          location: null
       input_dataset_path:
         label: input_dataset_path
         doc: input_dataset_path
@@ -53,6 +60,7 @@ $graph:
       run_script:
         run: '#xce_script'
         in:
+          bundle_path: bundle_path
           input_dataset_path: input_dataset_path
           mode: mode
           save_index: save_index
@@ -65,10 +73,10 @@ $graph:
     id: xce_script
     requirements:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.18.11.10.09
+        dockerPull: pftnc_inference:2026.09.18.11.19.52
     hints:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.18.11.10.09
+        dockerPull: pftnc_inference:2026.09.18.11.19.52
     baseCommand:
       - /usr/local/bin/_entrypoint.sh
       - python
@@ -77,6 +85,15 @@ $graph:
       - --batch
       - --eoap
     inputs:
+      bundle_path:
+        label: bundle_path
+        doc: bundle_path
+        type: Directory
+        default:
+          class: Directory
+          location: null
+        inputBinding:
+          prefix: --bundle-path
       input_dataset_path:
         label: input_dataset_path
         doc: input_dataset_path

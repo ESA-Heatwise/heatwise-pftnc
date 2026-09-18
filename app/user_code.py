@@ -12,6 +12,7 @@ from pathlib import Path
 # In[2]:
 
 
+bundle_path: "EOInput" = Path("hw-berlin_muggelsee_mlrun_20260916_113308")
 selection = "ensemble_simple" # can be one of these "best_overall", "best_per_target", "ensemble_simple", "ensemble_weighted", "ensemble_weighted_per_target",
 input_dataset_path: "EOInput" = Path("../input/berlin_muggelsee") 
 mode = "from_date" # can be "latest" or "from_date". "from_date" requires additional start_date parameter
@@ -102,30 +103,12 @@ if mode == "latest":
     start_date = None
 
 
-# In[ ]:
-
-
-bundle_path = Path("hw-berlin_muggelsee_mlrun_20260916_113308")
-
-
-# In[ ]:
-
-
-try:
-    # Find the script's parent directory, if we're running as a script.
-    datadir = pathlib.Path(__file__).parent
-except NameError:
-    # If __file__ is not defined, assume we're running in a notebook
-    # and look for the data file in the current working directory.
-    datadir = pathlib.Path.cwd()
-
-
 # In[10]:
 
 
 config = InferenceConfig(
       model={
-          "bundle_path": datadir / bundle_path,
+          "bundle_path": bundle_path,
           "selection": selection,
       },
       input_dataset={
