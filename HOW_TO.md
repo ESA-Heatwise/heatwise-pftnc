@@ -33,7 +33,7 @@ Update the `bundle_path` value in the first cell of
 `eoap/pftnc_inference.ipynb` to the bundle directory name, for example:
 
 ```python
-bundle_path: "EOInput" = "my_new_model_bundle"
+bundle_path: "EOInput" = Path("my_new_model_bundle")
 ```
 
 Rebuild the EOAP after changing the notebook so the generated CWL
