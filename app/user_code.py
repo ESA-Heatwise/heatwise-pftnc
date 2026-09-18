@@ -6,9 +6,15 @@ get_ipython = unittest.mock.MagicMock
 # In[1]:
 
 
-bundle_path: "EOInput" = "hw-berlin_muggelsee_mlrun_20260916_113308"
+from pathlib import Path
+
+
+# In[2]:
+
+
+bundle_path: "EOInput" = Path("hw-berlin_muggelsee_mlrun_20260916_113308")
 selection = "ensemble_simple" # can be one of these "best_overall", "best_per_target", "ensemble_simple", "ensemble_weighted", "ensemble_weighted_per_target",
-input_dataset_path: "EOInput" = ""
+input_dataset_path: "EOInput" = Path("../input/berlin_muggelsee") 
 mode = "from_date" # can be "latest" or "from_date". "from_date" requires additional start_date parameter
 start_date: str = "2023-12-01"
 
@@ -28,10 +34,9 @@ xcengine_config = dict(
 __xce_set_params()
 
 
-# In[2]:
+# In[3]:
 
 
-from pathlib import Path
 from typing import get_type_hints
 
 import pandas as pd
@@ -81,33 +86,33 @@ def get_catalog(inp: Path | str) -> pystac.Catalog:
 # In[7]:
 
 
-catalog_berlin_muggelsee = get_catalog(input_dataset_path)
+catalog = get_catalog(input_dataset_path)
 
 
 # In[8]:
 
 
 asset_id  = "berlin_muggelsee"
-fpath_berlin_muggelsee = next(iter(extract_assets_from_catalog(catalog_berlin_muggelsee, asset_id))).href
+fpath = next(iter(extract_assets_from_catalog(catalog, asset_id))).href
 
 
-# In[ ]:
+# In[9]:
 
 
 if mode == "latest":
     start_date = None
 
 
-# In[9]:
+# In[10]:
 
 
 config = InferenceConfig(
       model={
-          "bundle_path": Path(bundle_path),
+          "bundle_path": bundle_path,
           "selection": selection,
       },
       input_dataset={
-          "path": Path(fpath_berlin_muggelsee),
+          "path": Path(fpath),
       },
       mode=mode,
       start_date=start_date,
@@ -116,9 +121,28 @@ config = InferenceConfig(
   )
 
 
-# In[10]:
+# In[11]:
 
 
 predictions = run_inference(config)
 print("pftnc predictions successfully generated")
+
+
+# In[12]:
+
+
+predictions.attrs = {
+    "geospatial_lon_min": float(predictions["site_lon"].iloc[0]),
+    "geospatial_lon_max": float(predictions["site_lon"].iloc[0]),
+    "geospatial_lat_min": float(predictions["site_lat"].iloc[0]),
+    "geospatial_lat_max": float(predictions["site_lat"].iloc[0]),
+}
+print(predictions.attrs)
+print("attrs updated successfully")
+
+
+# In[ ]:
+
+
+
 

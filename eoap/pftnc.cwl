@@ -18,14 +18,14 @@ $graph:
         type: Directory
         default:
           class: Directory
-          location: hw-berlin_muggelsee_mlrun_20260916_113308
+          location: null
       input_dataset_path:
         label: input_dataset_path
         doc: input_dataset_path
         type: Directory
         default:
           class: Directory
-          location: ''
+          location: null
       mode:
         label: mode
         doc: mode
@@ -73,10 +73,10 @@ $graph:
     id: xce_script
     requirements:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.17.11.49.18
+        dockerPull: pftnc_inference:2026.09.18.11.19.52
     hints:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.17.11.49.18
+        dockerPull: pftnc_inference:2026.09.18.11.19.52
     baseCommand:
       - /usr/local/bin/_entrypoint.sh
       - python
@@ -91,7 +91,7 @@ $graph:
         type: Directory
         default:
           class: Directory
-          location: hw-berlin_muggelsee_mlrun_20260916_113308
+          location: null
         inputBinding:
           prefix: --bundle-path
       input_dataset_path:
@@ -100,7 +100,7 @@ $graph:
         type: Directory
         default:
           class: Directory
-          location: ''
+          location: null
         inputBinding:
           prefix: --input-dataset-path
       mode:
