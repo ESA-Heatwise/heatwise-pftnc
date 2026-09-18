@@ -6,9 +6,14 @@ get_ipython = unittest.mock.MagicMock
 # In[1]:
 
 
-bundle_path: "EOInput" = "hw-berlin_muggelsee_mlrun_20260916_113308"
+from pathlib import Path
+
+
+# In[2]:
+
+
 selection = "ensemble_simple" # can be one of these "best_overall", "best_per_target", "ensemble_simple", "ensemble_weighted", "ensemble_weighted_per_target",
-input_dataset_path: "EOInput" = ""
+input_dataset_path: "EOInput" = Path("../input/berlin_muggelsee") 
 mode = "from_date" # can be "latest" or "from_date". "from_date" requires additional start_date parameter
 start_date: str = "2023-12-01"
 
@@ -28,10 +33,9 @@ xcengine_config = dict(
 __xce_set_params()
 
 
-# In[2]:
+# In[3]:
 
 
-from pathlib import Path
 from typing import get_type_hints
 
 import pandas as pd
@@ -91,19 +95,37 @@ asset_id  = "berlin_muggelsee"
 fpath = next(iter(extract_assets_from_catalog(catalog, asset_id))).href
 
 
-# In[ ]:
+# In[9]:
 
 
 if mode == "latest":
     start_date = None
 
 
-# In[9]:
+# In[ ]:
+
+
+bundle_path = Path("hw-berlin_muggelsee_mlrun_20260916_113308")
+
+
+# In[ ]:
+
+
+try:
+    # Find the script's parent directory, if we're running as a script.
+    datadir = pathlib.Path(__file__).parent
+except NameError:
+    # If __file__ is not defined, assume we're running in a notebook
+    # and look for the data file in the current working directory.
+    datadir = pathlib.Path.cwd()
+
+
+# In[10]:
 
 
 config = InferenceConfig(
       model={
-          "bundle_path": Path(bundle_path),
+          "bundle_path": datadir / bundle_path,
           "selection": selection,
       },
       input_dataset={
@@ -116,14 +138,14 @@ config = InferenceConfig(
   )
 
 
-# In[10]:
+# In[11]:
 
 
 predictions = run_inference(config)
 print("pftnc predictions successfully generated")
 
 
-# In[ ]:
+# In[12]:
 
 
 predictions.attrs = {
@@ -134,4 +156,10 @@ predictions.attrs = {
 }
 print(predictions.attrs)
 print("attrs updated successfully")
+
+
+# In[ ]:
+
+
+
 

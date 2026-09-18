@@ -1,8 +1,5 @@
-bundle_path:
-  default: hw-berlin_muggelsee_mlrun_20260916_113308
-  type: Directory
 input_dataset_path:
-  default: ''
+  default: null
   type: Directory
 mode:
   default: from_date

@@ -12,20 +12,13 @@ $graph:
     doc: xcengine notebook
     requirements: []
     inputs:
-      bundle_path:
-        label: bundle_path
-        doc: bundle_path
-        type: Directory
-        default:
-          class: Directory
-          location: hw-berlin_muggelsee_mlrun_20260916_113308
       input_dataset_path:
         label: input_dataset_path
         doc: input_dataset_path
         type: Directory
         default:
           class: Directory
-          location: ''
+          location: null
       mode:
         label: mode
         doc: mode
@@ -60,7 +53,6 @@ $graph:
       run_script:
         run: '#xce_script'
         in:
-          bundle_path: bundle_path
           input_dataset_path: input_dataset_path
           mode: mode
           save_index: save_index
@@ -73,10 +65,10 @@ $graph:
     id: xce_script
     requirements:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.18.09.49.24
+        dockerPull: pftnc_inference:2026.09.18.11.10.09
     hints:
       DockerRequirement:
-        dockerPull: pftnc_inference:2026.09.18.09.49.24
+        dockerPull: pftnc_inference:2026.09.18.11.10.09
     baseCommand:
       - /usr/local/bin/_entrypoint.sh
       - python
@@ -85,22 +77,13 @@ $graph:
       - --batch
       - --eoap
     inputs:
-      bundle_path:
-        label: bundle_path
-        doc: bundle_path
-        type: Directory
-        default:
-          class: Directory
-          location: hw-berlin_muggelsee_mlrun_20260916_113308
-        inputBinding:
-          prefix: --bundle-path
       input_dataset_path:
         label: input_dataset_path
         doc: input_dataset_path
         type: Directory
         default:
           class: Directory
-          location: ''
+          location: null
         inputBinding:
           prefix: --input-dataset-path
       mode:
