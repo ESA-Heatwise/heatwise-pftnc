@@ -27,6 +27,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Checkout pftnc
+        uses: actions/checkout@v6
+        with:
+          repository: ESA-Heatwise/pftnc
+          path: app/build-includes/pftnc
+          ref: main
+
       - name: Set image name
         run: |
           echo "IMAGE_NAME=${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
