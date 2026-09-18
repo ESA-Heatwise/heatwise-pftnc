@@ -81,14 +81,14 @@ def get_catalog(inp: Path | str) -> pystac.Catalog:
 # In[7]:
 
 
-catalog_berlin_muggelsee = get_catalog(input_dataset_path)
+catalog = get_catalog(input_dataset_path)
 
 
 # In[8]:
 
 
 asset_id  = "berlin_muggelsee"
-fpath_berlin_muggelsee = next(iter(extract_assets_from_catalog(catalog_berlin_muggelsee, asset_id))).href
+fpath = next(iter(extract_assets_from_catalog(catalog, asset_id))).href
 
 
 # In[ ]:
@@ -107,7 +107,7 @@ config = InferenceConfig(
           "selection": selection,
       },
       input_dataset={
-          "path": Path(fpath_berlin_muggelsee),
+          "path": Path(fpath),
       },
       mode=mode,
       start_date=start_date,
@@ -121,4 +121,17 @@ config = InferenceConfig(
 
 predictions = run_inference(config)
 print("pftnc predictions successfully generated")
+
+
+# In[ ]:
+
+
+predictions.attrs = {
+    "geospatial_lon_min": float(predictions["site_lon"].iloc[0]),
+    "geospatial_lon_max": float(predictions["site_lon"].iloc[0]),
+    "geospatial_lat_min": float(predictions["site_lat"].iloc[0]),
+    "geospatial_lat_max": float(predictions["site_lat"].iloc[0]),
+}
+print(predictions.attrs)
+print("attrs updated successfully")
 
