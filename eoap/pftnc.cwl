@@ -73,10 +73,10 @@ $graph:
     id: xce_script
     requirements:
       DockerRequirement:
-        dockerPull: ghcr.io/esa-heatwise/heatwise-pftnc-inference:latest
+        dockerPull: ghcr.io/esa-heatwise/heatwise-pftnc-inference:v1.0.0
     hints:
       DockerRequirement:
-        dockerPull: ghcr.io/esa-heatwise/heatwise-pftnc-inference:latest
+        dockerPull: ghcr.io/esa-heatwise/heatwise-pftnc-inference:v1.0.0
     baseCommand:
       - /usr/local/bin/_entrypoint.sh
       - python
